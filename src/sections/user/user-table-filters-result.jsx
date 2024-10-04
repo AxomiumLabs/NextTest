@@ -1,4 +1,5 @@
-import { useCallback } from 'react';
+
+import react,{ useCallback } from 'react';
 
 import Chip from '@mui/material/Chip';
 
@@ -6,7 +7,7 @@ import { chipProps, FiltersBlock, FiltersResult } from 'src/components/filters-r
 
 // ----------------------------------------------------------------------
 
-export function UserTableFiltersResult({ filters, onResetPage, totalResults, sx }) {
+export default function UserTableFiltersResult({ filters, onResetPage, totalResults, sx }) {
   const handleRemoveKeyword = useCallback(() => {
     onResetPage();
     filters.setState({ name: '' });

@@ -17,7 +17,7 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
-export function UserTableToolbar({ filters, options, onResetPage }) {
+export default function UserTableToolbar({ filters, options, onResetPage }) {
   const popover = usePopover();
 
   const handleFilterName = useCallback(

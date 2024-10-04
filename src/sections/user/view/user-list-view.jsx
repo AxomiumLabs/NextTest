@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import React,  { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
@@ -27,8 +27,8 @@ import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
-// import { ConfirmDialog } from 'src/components/custom-dialog';
-// import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { ConfirmDialog } from 'src/components/custom-dialog';
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import {
   useTable,
   emptyRows,
@@ -41,10 +41,10 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import { UserTableRow } from '../user-table-row';
-import { UserTableToolbar } from '../user-table-toolbar';
-import { UserTableFiltersResult } from '../user-table-filters-result';
 
+import UserTableRow from '../user-table-row';
+import UserTableToolbar from '../user-table-toolbar';
+import UserTableFiltersResult from '../user-table-filters-result';
 // ----------------------------------------------------------------------
 
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
@@ -60,7 +60,7 @@ const TABLE_HEAD = [
 
 // ----------------------------------------------------------------------
 
-export function UserListView() {
+export  function UserListView() {
   const table = useTable();
 
   const router = useRouter();
@@ -124,29 +124,30 @@ export function UserListView() {
     },
     [filters, table]
   );
-
+  console.log('data heree',dataFiltered);
+  
   return (
     <>
       <DashboardContent>
-        {/* <CustomBreadcrumbs
+        <CustomBreadcrumbs
           heading="List"
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'User', href: paths.dashboard.user.root },
+            // { name: 'Dashboard', href: paths.dashboard.root },
+            // { name: 'User', href: paths.dashboard.user.root },
             { name: 'List' },
           ]}
-          action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.user.new}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              New user
-            </Button>
-          }
+          // action={
+          //   <Button
+          //     component={RouterLink}
+          //     href={paths.dashboard.user.new}
+          //     variant="contained"
+          //     startIcon={<Iconify icon="mingcute:add-line" />}
+          //   >
+          //     New user
+          //   </Button>
+          // }
           sx={{ mb: { xs: 3, md: 5 } }}
-        /> */}
+        />
 
         <Card>
           <Tabs
@@ -238,7 +239,7 @@ export function UserListView() {
                   }
                 />
 
-                <TableBody>
+                 <TableBody>
                   {dataFiltered
                     .slice(
                       table.page * table.rowsPerPage,
@@ -253,14 +254,14 @@ export function UserListView() {
                         onDeleteRow={() => handleDeleteRow(row.id)}
                         onEditRow={() => handleEditRow(row.id)}
                       />
-                    ))}
+                     ))} 
 
                   <TableEmptyRows
                     height={table.dense ? 56 : 56 + 20}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
                   />
 
-                  <TableNoData notFound={notFound} />
+                  {/* <TableNoData notFound={notFound} /> */}
                 </TableBody>
               </Table>
             </Scrollbar>
@@ -278,7 +279,7 @@ export function UserListView() {
         </Card>
       </DashboardContent>
 
-      {/* <ConfirmDialog
+      <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
         title="Delete"
@@ -299,7 +300,7 @@ export function UserListView() {
             Delete
           </Button>
         }
-      /> */}
+      />
     </>
   );
 }
