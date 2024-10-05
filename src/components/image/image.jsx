@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-// import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
@@ -62,7 +62,7 @@ export const Image = forwardRef(
   ) => {
     const content = (
       <Box
-        // component={LazyLoadImage}
+        component={LazyLoadImage}
         alt={alt}
         src={src}
         delayTime={delayTime}

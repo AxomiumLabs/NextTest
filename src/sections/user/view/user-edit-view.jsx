@@ -11,6 +11,8 @@ import { UserNewEditForm } from '../user-new-edit-form';
 // ----------------------------------------------------------------------
 
 export function UserEditView({ user: currentUser }) {
+  
+  
   return (
     <DashboardContent>
       <CustomBreadcrumbs

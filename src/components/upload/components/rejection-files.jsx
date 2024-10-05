@@ -16,6 +16,7 @@ export function RejectionFiles({ files, sx, className, ...other }) {
     return null;
   }
 
+
   return (
     <Paper
       variant="outlined"

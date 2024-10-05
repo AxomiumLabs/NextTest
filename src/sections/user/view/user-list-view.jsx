@@ -1,7 +1,7 @@
 'use client';
 
-import React,  { useState, useCallback } from 'react';
-
+import React,  { useState, useCallback, useEffect } from 'react';
+import axios from 'axios'
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
@@ -22,7 +22,7 @@ import { useSetState } from 'src/hooks/use-set-state';
 import { varAlpha } from 'src/theme/styles';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
-
+import { UserEditView } from './user-edit-view';
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -45,31 +45,51 @@ import {
 import UserTableRow from '../user-table-row';
 import UserTableToolbar from '../user-table-toolbar';
 import UserTableFiltersResult from '../user-table-filters-result';
+
+
 // ----------------------------------------------------------------------
 
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
-  { id: 'phoneNumber', label: 'Phone number', width: 180 },
-  { id: 'company', label: 'Company', width: 220 },
-  { id: 'role', label: 'Role', width: 180 },
-  { id: 'status', label: 'Status', width: 100 },
-  { id: '', width: 88 },
+  { id: 'address', label: 'Address', width: 240 },
+  { id: 'website', label: 'Website', width: 180 },
+  { id: 'rating', label: 'Rating', width: 80 },
+  // { id: 'status', label: 'Status', width: 100 },
+  { id: 'location',label: 'Loctaion', width: 130 },
 ];
 
 // ----------------------------------------------------------------------
 
-export  function UserListView() {
+
+
+export  function UserListView( ) {
   const table = useTable();
 
   const router = useRouter();
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(_userList);
+  const [tableData, setTableData] = useState([]);
+  console.log('dataa',tableData);
 
-  const filters = useSetState({ name: '', role: [], status: 'all' });
+useEffect(()=>{
+  const getData  = async () => {
+    try {
+      const res = await axios.get('https://api-dev.alacater.com/customers/all-restaurants/Al%20Barsha%20First');
+  
+     setTableData(res.data)
+    } catch (error) {
+      console.error('error fetching data', error);
+      throw error;
+    }
+  };
+  getData()
+},[])
+
+  
+  const filters = useSetState({ name: '',address:'', role: [], status: 'all' });
 
   const dataFiltered = applyFilter({
     inputData: tableData,
@@ -111,11 +131,19 @@ export  function UserListView() {
   }, [dataFiltered.length, dataInPage.length, table, tableData]);
 
   const handleEditRow = useCallback(
-    (id) => {
-      router.push(paths.dashboard.user.edit(id));
+    (id) => { 
+     
+      
+      const selectedRow = tableData.find((row) => row.id === id);
+  
+      if (selectedRow) {
+        console.log('Selected Row:', selectedRow);
+        router.push(paths.dashboard.user.edit(selectedRow._id)); 
+      } 
     },
-    [router]
+    [router, tableData]
   );
+  
 
   const handleFilterStatus = useCallback(
     (event, newValue) => {
@@ -301,6 +329,7 @@ export  function UserListView() {
           </Button>
         }
       />
+    
     </>
   );
 }

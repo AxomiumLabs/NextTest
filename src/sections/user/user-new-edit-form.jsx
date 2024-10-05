@@ -23,8 +23,10 @@ import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
 
 import { schemaHelper } from 'src/components/hook-form/schema-helper';
-import { Field,Form } from 'src/components/hook-form';
-
+import { Field,Form, } from 'src/components/hook-form';
+import { UploadAvatar } from 'src/components/upload';
+import { RHFUploadAvatar } from 'src/components/hook-form/rhf-upload';
+import { avatar } from 'src/theme/core/components/avatar';
 
 
 // ----------------------------------------------------------------------
@@ -57,25 +59,33 @@ export const NewUserSchema = zod.object({
 
 export function UserNewEditForm({ currentUser }) {
   const router = useRouter();
+const index = 0
 
   const defaultValues = useMemo(
     () => ({
-      status: currentUser?.status || '',
-      avatarUrl: currentUser?.avatarUrl || null,
+      status: currentUser[0]?.status || '',
+      avatarUrl: currentUser?.image || null,
       isVerified: currentUser?.isVerified || true,
-      name: currentUser?.name || '',
-      email: currentUser?.email || '',
-      phoneNumber: currentUser?.phoneNumber || '',
-      country: currentUser?.country || '',
-      state: currentUser?.state || '',
+      name: currentUser[index+1]?.name || '',
+  
+      country: currentUser[0]?.country || '',
+      state: currentUser[0]?.state || '',
       city: currentUser?.city || '',
-      address: currentUser?.address || '',
-      zipCode: currentUser?.zipCode || '',
-      company: currentUser?.company || '',
+      address: currentUser[index+1]?.address || '',
+  
       role: currentUser?.role || '',
-    }),
+      website:currentUser[0]?.website||'',
+      minimum_price:currentUser[0]?.minimum_price||'',
+      location:currentUser[0]?.location||'',
+    low_price:currentUser[0]?.low_price||'',
+  }),
     [currentUser]
   );
+// const defaultValues={
+//   name:currentUser[0]?.name||'',
+//   email:currentUser?.email||'',
+// }
+// console.log('userhere',currentUser[0].image);
 
   const methods = useForm({
     mode: 'onSubmit',
@@ -139,7 +149,7 @@ export function UserNewEditForm({ currentUser }) {
                     }}
                   >
                     Allowed *.jpeg, *.jpg, *.png, *.gif
-                     {/* <br /> max size of {fData(3145728)}  */}
+                  
                   </Typography>
                 }
               />
@@ -219,9 +229,7 @@ export function UserNewEditForm({ currentUser }) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              {/* <Field.Text name="name" label="Full name" />
-              <Field.Text name="email" label="Email address" />
-              <Field.Phone name="phoneNumber" label="Phone number" /> */}
+   
 
               <Field.CountrySelect
                 fullWidth
@@ -229,15 +237,15 @@ export function UserNewEditForm({ currentUser }) {
                 label="Country"
                 placeholder="Choose a country"
               />
- <Field.Text name="name" label="Your name" />
- <Field.Text name="email" label="Email address" />
+ <Field.Text name='name' label="Your name" />
+ <Field.Text name="minimum_price" label="Minimum Price" />
  {/* <Field.Phone name="phoneNumber" label="Phone number" />  */}
               <Field.Text name="state" label="State/region" />
-              <Field.Text name="city" label="City" />
+              <Field.Text name="location" label="Location" />
               <Field.Text name="address" label="Address" />
-              <Field.Text name="zipCode" label="Zip/code" />
-              <Field.Text name="company" label="Company" />
-              <Field.Text name="role" label="Role" />
+              <Field.Text name="website" label="website" />
+              {/* <Field.Text name="company" label="Company" /> */}
+              <Field.Text name="low_price" label='Low Price' />
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
@@ -248,6 +256,10 @@ export function UserNewEditForm({ currentUser }) {
           </Card>
         </Grid>
       </Grid>
+      <UploadAvatar upload={currentUser[0].image}/>
+     
     </Form>
+    
   );
+ 
 }

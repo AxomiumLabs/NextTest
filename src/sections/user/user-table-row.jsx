@@ -10,7 +10,6 @@ import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { Label } from 'src/components/label';
@@ -19,15 +18,18 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
 
 import { UserQuickEditForm } from './user-quick-edit-form';
+import { useState } from 'react';
 
 // ----------------------------------------------------------------------
 
 export default function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
+  
   const confirm = useBoolean();
 
   const popover = usePopover();
 
   const quickEdit = useBoolean();
+ 
 
   return (
     <>
@@ -50,13 +52,14 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
             </Stack>
           </Stack>
         </TableCell>
- <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.phoneNumber}</TableCell>
+ <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.address}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.company}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.website
+        }</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.role}</TableCell> 
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.ratingCount}</TableCell> 
        
-
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.location}</TableCell> 
         <TableCell>
           {/* <Label
             variant="soft"

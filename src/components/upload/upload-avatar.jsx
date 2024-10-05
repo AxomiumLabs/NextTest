@@ -10,37 +10,52 @@ import { Image } from '../image';
 import { Iconify } from '../iconify';
 import { uploadClasses } from './classes';
 import { RejectionFiles } from './components/rejection-files';
+import zIndex from '@mui/material/styles/zIndex';
+import { Upload } from '.';
+import { RHFUploadAvatar } from '../hook-form';
 
 // ----------------------------------------------------------------------
 
-export function UploadAvatar({ sx, error, value, disabled, helperText, className, ...other }) {
-  const { getRootProps, getInputProps, isDragActive, isDragReject, fileRejections } = ({
+export function UploadAvatar({ sx, error, value, disabled, helperText,upload, className, ...other }) {
+  const { getRootProps, getInputProps, isDragActive, isDragReject, fileRejections } = useDropzone({
     multiple: false,
     disabled,
     accept: { 'image/*': [] },
     ...other,
   });
-console.log("files",other);
 
+  // console.log("data",upload);
 
-  const hasFile = !!value;
+  const hasFile = !!upload;
 
   const hasError = isDragReject || !!error;
 
   const [preview, setPreview] = useState('');
+
+
+// useEffect(()=>{
  
-  console.log('value',value);
+//     setUploads(upload)
+//   setUploadstring(uploads)
+// },[upload])
+
+// console.log("vwefefw",upload);
   useEffect(() => {
    
-    if (typeof value === 'string') {
-      setPreview(value);
-    } else if (value instanceof File) {
-      setPreview(URL.createObjectURL(value));
+    if (typeof upload === 'string') {
+      setPreview(upload);
+    } else if (upload instanceof File) {
+      const objectUrl = URL.createObjectURL(upload);
+      setPreview(objectUrl);
+      return () => URL.revokeObjectURL(objectUrl);
+     
     }
-  }, [value]);
-
+  }, [upload]);
+ 
+  console.log("preview",preview);
   const renderPreview = hasFile && (
-    <Image alt="avatar" src={preview} sx={{ width: 1, height: 1, borderRadius: '50%' }} />
+    <img alt="avatar" src={preview} sx={{ width: 1, height: 1, borderRadius: '50%' }} />
+    
   );
 
   const renderPlaceholder = (
@@ -102,7 +117,7 @@ console.log("files",other);
   return (
     <>
       <Box
-        {...getRootProps}
+        {...getRootProps()}
         className={uploadClasses.uploadBox.concat(className ? ` ${className}` : '')}
         sx={{
           p: 1,
@@ -110,7 +125,7 @@ console.log("files",other);
           width: 144,
           height: 144,
           cursor: 'pointer',
-          overflow: 'hidden',
+          // overflow: 'hidden',
           borderRadius: '50%',
           border: (theme) => `1px dashed ${varAlpha(theme.vars.palette.grey['500Channel'], 0.2)}`,
           ...(isDragActive && { opacity: 0.72 }),
@@ -125,7 +140,7 @@ console.log("files",other);
           ...sx,
         }}
       >
-        <input {...getInputProps} />
+        <input {...getInputProps()} />
 
         {renderContent}
       </Box>
@@ -133,7 +148,7 @@ console.log("files",other);
        {helperText && helperText}
 {/* 
       <RejectionFiles files={fileRejections} />  */}
-      <div>gshdghjsdgchsdv</div>
+
     </>
   );
 }

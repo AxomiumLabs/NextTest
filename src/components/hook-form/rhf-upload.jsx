@@ -9,6 +9,7 @@ import { Upload, UploadBox, UploadAvatar } from '../upload';
 export function RHFUploadAvatar({ name, ...other }) {
   const { control, setValue } = useFormContext();
 
+console.log('hhu',other);
 
 
   return (
@@ -20,7 +21,10 @@ export function RHFUploadAvatar({ name, ...other }) {
           const value = acceptedFiles[0];
 
           setValue(name, value, { shouldValidate: true });
+     
+        
         };
+
 
         return (
           <div>
