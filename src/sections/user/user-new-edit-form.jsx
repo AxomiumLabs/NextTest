@@ -1,7 +1,8 @@
 import { z as zod } from 'zod';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller } from 'react-hook-form';
+import axios from 'axios'
 // import { isValidPhoneNumber } from 'react-phone-number-input/input';
 
 import Box from '@mui/material/Box';
@@ -23,10 +24,11 @@ import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
 
 import { schemaHelper } from 'src/components/hook-form/schema-helper';
-import { Field,Form, } from 'src/components/hook-form';
-import { UploadAvatar } from 'src/components/upload';
-import { RHFUploadAvatar } from 'src/components/hook-form/rhf-upload';
-import { avatar } from 'src/theme/core/components/avatar';
+import { Field, Form, } from 'src/components/hook-form';
+import { _phoneNumbers } from 'src/_mock';
+import axiosInstance, { createData } from 'src/utils/axios';
+
+
 
 
 // ----------------------------------------------------------------------
@@ -35,86 +37,168 @@ export const NewUserSchema = zod.object({
   avatarUrl: schemaHelper.file({
     message: { required_error: 'Avatar is required!' },
   }),
+  //  image: schemaHelper.file({
+  //     message: { required_error: 'Avatar is required!' },
+  //   }),
+  //  bannerImage: schemaHelper.file({
+  //     message: { required_error: 'Avatar is required!' },
+  //   }),
   name: zod.string().min(1, { message: 'Name is required!' }),
-  email: zod
-    .string()
-    .min(1, { message: 'Email is required!' })
-    .email({ message: 'Email must be a valid email address!' }),
+  // email: zod
+  //   .string()
+  //   .min(1, { message: 'Email is required!' })
+  //   .email({ message: 'Email must be a valid email address!' }),
   // phoneNumber: schemaHelper.phoneNumber({ isValidPhoneNumber }),
-  country: schemaHelper.objectOrNull({
-    message: { required_error: 'Country is required!' },
-  }),
+  // country: schemaHelper.objectOrNull({
+  //   message: { required_error: 'Country is required!' },
+  // }),
   address: zod.string().min(1, { message: 'Address is required!' }),
-  company: zod.string().min(1, { message: 'Company is required!' }),
-  state: zod.string().min(1, { message: 'State is required!' }),
-  city: zod.string().min(1, { message: 'City is required!' }),
-  role: zod.string().min(1, { message: 'Role is required!' }),
-  zipCode: zod.string().min(1, { message: 'Zip code is required!' }),
-  // Not required
-  status: zod.string(),
-  isVerified: zod.boolean(),
+  // state: zod.string().min(1, { message: 'Company is required!' }),
+  location: zod.string().min(1, { message: 'State is required!' }),
+  minimum_price: zod.string().min(1, { message: 'City is required!' }),
+  // low_price: zod.string().min(1, { message: 'Role is required!' }),
+  website: zod.string().min(1, { message: 'Zip code is required!' }),
+  description: zod.string().min(1, { message: 'description is required!' }),
+  contactNumber: zod.string().min(1, { message: 'contactnumber is required!' }),
+  // // Not required
+  // status: zod.string(),
+  // isVerified: zod.boolean(),
 });
 
 // ----------------------------------------------------------------------
 
 export function UserNewEditForm({ currentUser }) {
-  const router = useRouter();
-const index = 0
 
+  const router = useRouter();
   const defaultValues = useMemo(
     () => ({
-      status: currentUser[0]?.status || '',
-      avatarUrl: currentUser?.image || null,
+      status: currentUser?.status || '',
+      avatarUrl: currentUser?.bannerImage
+        || null,
       isVerified: currentUser?.isVerified || true,
-      name: currentUser[index+1]?.name || '',
-  
-      country: currentUser[0]?.country || '',
-      state: currentUser[0]?.state || '',
+      country: currentUser?.country || '',
+      state: currentUser?.state || '',
       city: currentUser?.city || '',
-      address: currentUser[index+1]?.address || '',
-  
+      address: currentUser?.address || '',
+      name: currentUser?.name || '',
       role: currentUser?.role || '',
-      website:currentUser[0]?.website||'',
-      minimum_price:currentUser[0]?.minimum_price||'',
-      location:currentUser[0]?.location||'',
-    low_price:currentUser[0]?.low_price||'',
-  }),
+      website: currentUser?.website || '',
+      minimum_price: currentUser?.minimum_price || 0,
+      location: currentUser?.location || '',
+      low_price: currentUser?.low_price || '',
+
+      description: currentUser?.description || '',
+      contactNumber: currentUser?.contactNumber || '',
+    }),
     [currentUser]
   );
-// const defaultValues={
-//   name:currentUser[0]?.name||'',
-//   email:currentUser?.email||'',
-// }
-// console.log('userhere',currentUser[0].image);
-
+ 
+const addresURL = process.env.NEXT_PUBLIC_ADDRES_URL
+const updateresURL = process.env.NEXT_PUBLIC_UPDATERES_URL
+const deleteresURL = process.env.NEXT_PUBLIC_DELETERES_URL
   const methods = useForm({
     mode: 'onSubmit',
     resolver: zodResolver(NewUserSchema),
     defaultValues,
   });
-
   const {
     reset,
     watch,
     control,
     handleSubmit,
+
     formState: { isSubmitting },
   } = methods;
 
   const values = watch();
 
   const onSubmit = handleSubmit(async (data) => {
+    const token = localStorage.getItem('token')
+
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      toast.success(currentUser ? 'Update success!' : 'Create success!');
-      router.push(paths.dashboard.user.list);
-      console.info('DATA', data);
+      if (currentUser) {
+
+        const datas = {
+          restaurant_id: currentUser._id,
+          name: data.name,
+          minimum_price: currentUser.minimum_price,
+          address: data.address,
+          description: data.description,
+          website: data.website,
+          banner_image: data.avatarUrl,
+          contactNumber: data.contactNumber
+
+        }
+        
+
+        const response = await axiosInstance.put(updateresURL, datas, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`,
+          }
+        })
+      
+        console.info('DATAs', response)
+        alert('updated successfully')
+        router.push(paths.dashboard.three);
+      } else {
+        const body = {
+          name: data.name,
+          location: data.location,
+          address: data.address,
+          description: data.description,
+          latitude: "32",
+          longitude: "1",
+          banner_image: data.avatarUrl,
+          website:data.website,
+          // bannerImage: null,
+          contactNumber: data.contactNumber,
+          cuisine_types:
+            "string"
+          ,
+          minimum_price: data.minimum_price,
+
+
+        }
+      
+        
+        const res = await axiosInstance.post(addresURL,body,  {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`,
+
+          }
+        })
+        
+        alert(currentUser ? 'Update success!' : 'Create success!');
+         router.push(paths.dashboard.three)
+      }
     } catch (error) {
       console.error(error);
     }
   });
+  const handleDelete = async () => {
 
+    const id = {
+      id: [currentUser._id]
+    }
+   
+
+    try {
+      const token = localStorage.getItem('token')
+      const response = await axiosInstance.delete(deleteresURL, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        data: id
+      })
+      
+
+    } catch (err) {
+      console.log(err);
+    }
+  }
   return (
     <Form methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -133,7 +217,7 @@ const index = 0
               </Label>
             )}
 
-           <Box sx={{ mb: 5 }}>
+            <Box sx={{ mb: 5 }}>
               <Field.UploadAvatar
                 name="avatarUrl"
                 maxSize={3145728}
@@ -149,11 +233,11 @@ const index = 0
                     }}
                   >
                     Allowed *.jpeg, *.jpg, *.png, *.gif
-                  
+
                   </Typography>
                 }
               />
-            </Box>  
+            </Box>
 
             {currentUser && (
               <FormControlLabel
@@ -210,7 +294,7 @@ const index = 0
 
             {currentUser && (
               <Stack justifyContent="center" alignItems="center" sx={{ mt: 3 }}>
-                <Button variant="soft" color="error">
+                <Button onClick={handleDelete} variant="soft" color="error">
                   Delete user
                 </Button>
               </Stack>
@@ -229,37 +313,43 @@ const index = 0
                 sm: 'repeat(2, 1fr)',
               }}
             >
-   
-
+              {/* 
               <Field.CountrySelect
                 fullWidth
                 name="country"
                 label="Country"
                 placeholder="Choose a country"
-              />
- <Field.Text name='name' label="Your name" />
- <Field.Text name="minimum_price" label="Minimum Price" />
- {/* <Field.Phone name="phoneNumber" label="Phone number" />  */}
-              <Field.Text name="state" label="State/region" />
-              <Field.Text name="location" label="Location" />
+              /> */}
+
+              <Field.Text name='name' label="Your name" />
+              <Field.Text name="minimum_price" label="Minimum Price" />
+              {/* <Field.Phone name="phoneNumber" label="Phone number" />  */}
+               {/* <Field.Text name="state" label="State/region" />  */}
+              <Field.Text name="location" label="Location" />  
               <Field.Text name="address" label="Address" />
               <Field.Text name="website" label="website" />
-              {/* <Field.Text name="company" label="Company" /> */}
-              <Field.Text name="low_price" label='Low Price' />
+              <Field.Text name="description" label="description" />
+              <Field.Text name="contactNumber" label="ContactNumber" />
+              {/* <Field.Text name="latitude" label='Low Price' />  */}
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
-              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+              {/* {!currentUser?(   <LoadingButton type="submit" variant="contained"  loading={isSubmitting} >
+              CreateUser
+              </LoadingButton>):   (<LoadingButton type="submit" variant="contained"  onClick={handleUpdate} >
+               Save Changes
+              </LoadingButton>)} */}
+              <LoadingButton type="submit" variant="contained" loading={isSubmitting} >
                 {!currentUser ? 'Create user' : 'Save changes'}
               </LoadingButton>
             </Stack>
           </Card>
         </Grid>
       </Grid>
-      <UploadAvatar upload={currentUser[0].image}/>
-     
+
+
     </Form>
-    
+
   );
- 
+
 }

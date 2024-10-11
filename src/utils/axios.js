@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+
 import { CONFIG } from 'src/config-global';
 
 // ----------------------------------------------------------------------
@@ -12,7 +13,15 @@ axiosInstance.interceptors.response.use(
 );
 
 export default axiosInstance;
+// const token = localStorage.getItem('token')
+// const axiosInstance=axios.create({
+//    baseURL: CONFIG.serverUrl ,
+//    headers:{
+//     'Content-Type': 'application/json',
+//     // 'Authorization': `Bearer ${token}`,
 
+//    }
+// })
 // ----------------------------------------------------------------------
 
 export const fetcher = async (args) => {
@@ -28,6 +37,18 @@ export const fetcher = async (args) => {
   }
 };
 
+
+
+//   try{
+//     const response=await axios.get(endpoint,headers={});
+//     return response.data
+
+//   }catch(err){
+//     console.log(err);
+    
+//   }
+// }
+
 // ----------------------------------------------------------------------
 
 export const endpoints = {
@@ -37,7 +58,7 @@ export const endpoints = {
   auth: {
     me: '/api/auth/me',
     signIn: '/api/auth/sign-in',
-    signUp: '/api/auth/sign-up',
+    signUp: 'https://api-dev.alacater.com/caters',
   },
   mail: {
     list: '/api/mail/list',

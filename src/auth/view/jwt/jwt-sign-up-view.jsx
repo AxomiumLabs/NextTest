@@ -53,10 +53,10 @@ export function JwtSignUpView() {
   const [errorMsg, setErrorMsg] = useState('');
 
   const defaultValues = {
-    firstName: 'Hello',
-    lastName: 'Friend',
-    email: 'hello@gmail.com',
-    password: '@demo1',
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
   };
 
   const methods = useForm({
@@ -70,16 +70,20 @@ export function JwtSignUpView() {
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
+    
     try {
       await signUp({
         email: data.email,
         password: data.password,
         firstName: data.firstName,
         lastName: data.lastName,
+        role:'admin',
+    status:true,
+    phoneNumber:'7890897867'
       });
       await checkUserSession?.();
 
-      router.refresh();
+      // router.refresh();
     } catch (error) {
       console.error(error);
       setErrorMsg(typeof error === 'string' ? error : error.message);

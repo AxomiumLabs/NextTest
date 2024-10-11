@@ -18,6 +18,7 @@ import { USER_STATUS_OPTIONS } from 'src/_mock';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
+import { avatar } from 'src/theme/core/components/avatar';
 
 // ----------------------------------------------------------------------
 
@@ -57,6 +58,7 @@ export function UserQuickEditForm({ currentUser, open, onClose }) {
       status: currentUser?.status,
       company: currentUser?.company || '',
       role: currentUser?.role || '',
+      
     }),
     [currentUser]
   );

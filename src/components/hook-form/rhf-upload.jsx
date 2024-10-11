@@ -9,7 +9,7 @@ import { Upload, UploadBox, UploadAvatar } from '../upload';
 export function RHFUploadAvatar({ name, ...other }) {
   const { control, setValue } = useFormContext();
 
-console.log('hhu',other);
+console.log('sdcsdv',other);
 
 
   return (

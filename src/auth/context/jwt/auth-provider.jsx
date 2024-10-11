@@ -20,16 +20,17 @@ export function AuthProvider({ children }) {
 
   const checkUserSession = useCallback(async () => {
     try {
-      const accessToken = sessionStorage.getItem(STORAGE_KEY);
+      const accessToken = localStorage.getItem(STORAGE_KEY);
+
 
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
 
-        const res = await axios.get(endpoints.auth.me);
+        // const res = await axios.get(endpoints.auth.me);
 
-        const { user } = res.data;
+        // const { user } = res.data;
 
-        setState({ user: { ...user, accessToken }, loading: false });
+        setState({ user: {  accessToken }, loading: false });
       } else {
         setState({ user: null, loading: false });
       }
@@ -47,6 +48,7 @@ export function AuthProvider({ children }) {
   // ----------------------------------------------------------------------
 
   const checkAuthenticated = state.user ? 'authenticated' : 'unauthenticated';
+
 
   const status = state.loading ? 'loading' : checkAuthenticated;
 

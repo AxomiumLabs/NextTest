@@ -31,16 +31,17 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
   const quickEdit = useBoolean();
  
 
+
   return (
     <>
       <TableRow hover selected={selected} aria-checked={selected} tabIndex={-1}>
         <TableCell padding="checkbox">
-          <Checkbox id={row.id} checked={selected} onClick={onSelectRow} />
+          <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
         </TableCell>
 
         <TableCell>
           <Stack spacing={2} direction="row" alignItems="center">
-            <Avatar alt={row.name} src={row.avatarUrl} />
+            <Avatar alt={row.name} src={row.image} />
 
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
               <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
@@ -60,8 +61,8 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.ratingCount}</TableCell> 
        
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.location}</TableCell> 
-        <TableCell>
-          {/* <Label
+        {/* <TableCell>
+          <Label
             variant="soft"
             color={
               (row.status === 'active' && 'success') ||
@@ -71,8 +72,8 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
             }
           >
             {row.status}
-          </Label> */}
-        </TableCell>
+          </Label>
+        </TableCell> */}
 
         <TableCell>
           <Stack direction="row" alignItems="center">
@@ -93,7 +94,7 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
       </TableRow>
 
       <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} />
-
+ 
       <CustomPopover
         open={popover.open}
         anchorEl={popover.anchorEl}

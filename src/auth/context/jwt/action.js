@@ -1,26 +1,28 @@
 'use client';
 
 import axios, { endpoints } from 'src/utils/axios';
+import { paths } from 'src/routes/paths';
 
-import { setSession } from './utils';
 import { STORAGE_KEY } from './constant';
+import { status } from 'nprogress';
+import { setSession } from './utils';
 
 /** **************************************
  * Sign in
  *************************************** */
-export const signInWithPassword = async ({ email, password }) => {
+export const signInWithPassword = async ({ email, password,role }) => {
   try {
-    const params = { email, password };
+    const params = { email, password,role:"admin" };
 
-    const res = await axios.post(endpoints.auth.signIn, params);
+    const res = await axios.post('https://api-dev.alacater.com/caters/login', params);
 
-    const { accessToken } = res.data;
+localStorage.setItem('token',res.data.token)
+   const accessToken=localStorage.getItem('token')
 
-    if (!accessToken) {
-      throw new Error('Access token not found in response');
-    }
-
-    setSession(accessToken);
+   
+alert('login succsessfull')
+window.location.href = paths.dashboard.root
+  setSession(accessToken);
   } catch (error) {
     console.error('Error during sign in:', error);
     throw error;
@@ -30,24 +32,30 @@ export const signInWithPassword = async ({ email, password }) => {
 /** **************************************
  * Sign up
  *************************************** */
-export const signUp = async ({ email, password, firstName, lastName }) => {
+export const signUp = async ({ email, password, firstName, lastName,phoneNumber,role,
+  status }) => {
   const params = {
     email,
     password,
     firstName,
     lastName,
+    role:'admin',
+    status:true,
+    phoneNumber:'7890897867'
   };
 
   try {
-    const res = await axios.post(endpoints.auth.signUp, params);
+    const res = await axios.post('https://api-dev.alacater.com/caters', params);
 
-    const { accessToken } = res.data;
+    // const { accessToken } = res.data;
+        alert('registrationsuccsussful')
+     
+        window.location.href = paths.auth.jwt.signIn;
+    // if (!accessToken) {
+    //   throw new Error('Access token not found in response');
+    // }
 
-    if (!accessToken) {
-      throw new Error('Access token not found in response');
-    }
-
-    sessionStorage.setItem(STORAGE_KEY, accessToken);
+    // localStorage.setItem(STORAGE_KEY, accessToken);
   } catch (error) {
     console.error('Error during sign up:', error);
     throw error;

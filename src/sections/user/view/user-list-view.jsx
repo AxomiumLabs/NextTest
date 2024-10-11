@@ -1,6 +1,6 @@
 'use client';
 
-import React,  { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import axios from 'axios'
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
@@ -45,6 +45,8 @@ import {
 import UserTableRow from '../user-table-row';
 import UserTableToolbar from '../user-table-toolbar';
 import UserTableFiltersResult from '../user-table-filters-result';
+import axiosInstance, { fetcher } from 'src/utils/axios';
+
 
 
 // ----------------------------------------------------------------------
@@ -57,39 +59,48 @@ const TABLE_HEAD = [
   { id: 'website', label: 'Website', width: 180 },
   { id: 'rating', label: 'Rating', width: 80 },
   // { id: 'status', label: 'Status', width: 100 },
-  { id: 'location',label: 'Loctaion', width: 130 },
+  { id: 'location', label: 'Loctaion', width: 130 },
+  { id: '', label: '', width: 130 },
 ];
 
 // ----------------------------------------------------------------------
 
 
 
-export  function UserListView( ) {
+export function UserListView() {
   const table = useTable();
 
   const router = useRouter();
 
   const confirm = useBoolean();
-
+ 
+  const getUrl = process.env.NEXT_PUBLIC_GETRES_URL
   const [tableData, setTableData] = useState([]);
-  console.log('dataa',tableData);
-
-useEffect(()=>{
-  const getData  = async () => {
-    try {
-      const res = await axios.get('https://api-dev.alacater.com/customers/all-restaurants/Al%20Barsha%20First');
   
-     setTableData(res.data)
-    } catch (error) {
-      console.error('error fetching data', error);
-      throw error;
-    }
-  };
-  getData()
-},[])
+  useEffect(() => {
+    const getData = async () => {
+      const token = localStorage.getItem('token')
+      
 
-  
-  const filters = useSetState({ name: '',address:'', role: [], status: 'all' });
+      try {
+        const res = await fetcher(getUrl, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`,
+
+          }
+        });
+        setTableData(res)
+      } catch (error) {
+        console.error('error fetching data', error);
+        throw error;
+      }
+    };
+    getData()
+  }, [])
+
+
+  const filters = useSetState({ name: '', address: '', role: [], status: 'all' });
 
   const dataFiltered = applyFilter({
     inputData: tableData,
@@ -104,23 +115,64 @@ useEffect(()=>{
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
-  const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
+  const handleDeleteRow = useCallback(async (ids) => {
+    const deleteRow = tableData.filter((row) => row._id !== ids);
+    // console.log('row idss',deleteRow,ids);
 
-      toast.success('Delete success!');
+    const id = { id: [ids] }
+   
 
-      setTableData(deleteRow);
+    try {
+      const token = localStorage.getItem('token')
+      // console.log('njtoken',token);
 
-      table.onUpdatePageDeleteRow(dataInPage.length);
-    },
+      const response = await axios.delete('https://api-dev.alacater.com/caters/restaurants', {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+
+        },
+        data: id
+      })
+     
+      alert('done')
+    } catch (err) {
+      console.log(err);
+
+    }
+    setTableData(deleteRow);
+
+    table.onUpdatePageDeleteRow(dataInPage.length);
+  },
     [dataInPage.length, table, tableData]
   );
 
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
+  const handleDeleteRows = useCallback(async () => {
+    const deleteRows = tableData.filter((row) => !table.selected.includes(row._id));
+    // const tablerows= tableData.map((row)=>row._id)
+    // console.log('deleterows',deleteRows,tablerows);
+    // console.log('table.selected',table.selected);
+    // console.log('table datass',tableData);
+    const id = { id: table.selected }
+    try {
+      const token = localStorage.getItem('token')
+      // console.log('njtoken',token);
 
-    toast.success('Delete success!');
+      const response = await axios.delete('https://api-dev.alacater.com/caters/restaurants', {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        data: id
+      })
+    
+
+    } catch (err) {
+      console.log(err);
+
+    }
+    alert('Delete success!');
+
 
     setTableData(deleteRows);
 
@@ -131,19 +183,22 @@ useEffect(()=>{
   }, [dataFiltered.length, dataInPage.length, table, tableData]);
 
   const handleEditRow = useCallback(
-    (id) => { 
-     
-      
-      const selectedRow = tableData.find((row) => row.id === id);
-  
+    (id) => {
+
+
+      const selectedRow = tableData.find((row) => row._id === id);
+
+
       if (selectedRow) {
-        console.log('Selected Row:', selectedRow);
-        router.push(paths.dashboard.user.edit(selectedRow._id)); 
-      } 
+
+        router.push(paths.dashboard.user.edit(selectedRow._id),
+        );
+      }
     },
+
     [router, tableData]
   );
-  
+
 
   const handleFilterStatus = useCallback(
     (event, newValue) => {
@@ -152,8 +207,8 @@ useEffect(()=>{
     },
     [filters, table]
   );
-  console.log('data heree',dataFiltered);
-  
+
+
   return (
     <>
       <DashboardContent>
@@ -164,16 +219,16 @@ useEffect(()=>{
             // { name: 'User', href: paths.dashboard.user.root },
             { name: 'List' },
           ]}
-          // action={
-          //   <Button
-          //     component={RouterLink}
-          //     href={paths.dashboard.user.new}
-          //     variant="contained"
-          //     startIcon={<Iconify icon="mingcute:add-line" />}
-          //   >
-          //     New user
-          //   </Button>
-          // }
+          action={
+            <Button
+              component={RouterLink}
+              href={paths.dashboard.group.six}
+              variant="contained"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+            >
+              New user
+            </Button>
+          }
           sx={{ mb: { xs: 3, md: 5 } }}
         />
 
@@ -238,7 +293,7 @@ useEffect(()=>{
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  dataFiltered.map((row) => row.id)
+                  dataFiltered.map((row) => row._id)
                 )
               }
               action={
@@ -262,12 +317,12 @@ useEffect(()=>{
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
-                      dataFiltered.map((row) => row.id)
+                      dataFiltered.map((row) => row._id)
                     )
                   }
                 />
 
-                 <TableBody>
+                <TableBody>
                   {dataFiltered
                     .slice(
                       table.page * table.rowsPerPage,
@@ -275,14 +330,14 @@ useEffect(()=>{
                     )
                     .map((row) => (
                       <UserTableRow
-                        key={row.id}
+                        key={row._id}
                         row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
+                        selected={table.selected.includes(row._id)}
+                        onSelectRow={() => table.onSelectRow(row._id)}
+                        onDeleteRow={() => handleDeleteRow(row._id)}
+                        onEditRow={() => handleEditRow(row._id)}
                       />
-                     ))} 
+                    ))}
 
                   <TableEmptyRows
                     height={table.dense ? 56 : 56 + 20}
@@ -294,7 +349,9 @@ useEffect(()=>{
               </Table>
             </Scrollbar>
           </Box>
-
+          {/* <Button variant="contained" color="error" >
+            Delete
+          </Button> */}
           <TablePaginationCustom
             page={table.page}
             dense={table.dense}
@@ -303,8 +360,10 @@ useEffect(()=>{
             onPageChange={table.onChangePage}
             onChangeDense={table.onChangeDense}
             onRowsPerPageChange={table.onChangeRowsPerPage}
+
           />
         </Card>
+
       </DashboardContent>
 
       <ConfirmDialog
@@ -329,7 +388,7 @@ useEffect(()=>{
           </Button>
         }
       />
-    
+
     </>
   );
 }

@@ -11,8 +11,6 @@ import { Iconify } from '../iconify';
 import { uploadClasses } from './classes';
 import { RejectionFiles } from './components/rejection-files';
 import zIndex from '@mui/material/styles/zIndex';
-import { Upload } from '.';
-import { RHFUploadAvatar } from '../hook-form';
 
 // ----------------------------------------------------------------------
 
@@ -24,38 +22,33 @@ export function UploadAvatar({ sx, error, value, disabled, helperText,upload, cl
     ...other,
   });
 
-  // console.log("data",upload);
+ 
 
-  const hasFile = !!upload;
+  const hasFile = !!value;
 
   const hasError = isDragReject || !!error;
 
   const [preview, setPreview] = useState('');
-
-
-// useEffect(()=>{
  
-//     setUploads(upload)
-//   setUploadstring(uploads)
-// },[upload])
 
-// console.log("vwefefw",upload);
+
+
+
   useEffect(() => {
    
-    if (typeof upload === 'string') {
-      setPreview(upload);
-    } else if (upload instanceof File) {
-      const objectUrl = URL.createObjectURL(upload);
+    if (typeof value === 'string') {
+      setPreview(value);
+    } else if (value instanceof File) {
+      const objectUrl = URL.createObjectURL(value);
       setPreview(objectUrl);
       return () => URL.revokeObjectURL(objectUrl);
      
     }
-  }, [upload]);
+  }, [value]);
  
-  console.log("preview",preview);
+
   const renderPreview = hasFile && (
-    <img alt="avatar" src={preview} sx={{ width: 1, height: 1, borderRadius: '50%' }} />
-    
+    <Image alt="avatar" src={preview} sx={{ width: 1, height: 1, borderRadius: '50%' }} />
   );
 
   const renderPlaceholder = (
@@ -148,7 +141,7 @@ export function UploadAvatar({ sx, error, value, disabled, helperText,upload, cl
        {helperText && helperText}
 {/* 
       <RejectionFiles files={fileRejections} />  */}
-
+    
     </>
   );
 }

@@ -50,8 +50,8 @@ export function JwtSignInView() {
   const password = useBoolean();
 
   const defaultValues = {
-    email: 'demo@minimals.cc',
-    password: '@demo1',
+    email: 'candy123@gmail.com',
+    password: 'Candy@1234',
   };
 
   const methods = useForm({
@@ -69,7 +69,7 @@ export function JwtSignInView() {
       await signInWithPassword({ email: data.email, password: data.password });
       await checkUserSession?.();
 
-      router.refresh();
+      // router.refresh();
     } catch (error) {
       console.error(error);
       setErrorMsg(typeof error === 'string' ? error : error.message);

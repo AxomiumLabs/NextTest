@@ -72,7 +72,7 @@ export function tokenExpired(exp) {
 export async function setSession(accessToken) {
   try {
     if (accessToken) {
-      sessionStorage.setItem(STORAGE_KEY, accessToken);
+      localStorage.getItem('token');
 
       axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 
@@ -84,7 +84,7 @@ export async function setSession(accessToken) {
         throw new Error('Invalid access token!');
       }
     } else {
-      sessionStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(STORAGE_KEY);
       delete axios.defaults.headers.common.Authorization;
     }
   } catch (error) {
